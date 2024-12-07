@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Website</title>
+    <title>Real-Time Chat</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,32 +67,46 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1>Chat Room</h1>
+            <h1>Real-Time Chat</h1>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            <!-- Messages will appear here -->
-        </div>
+        <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input">
             <input type="text" id="messageInput" placeholder="Type your message here...">
             <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        const chatMessages = document.getElementById('chatMessages');
-        const messageInput = document.getElementById('messageInput');
+        const socket = io(); // Connect to the server
+        const chatMessages = document.getElementById("chatMessages");
+        const messageInput = document.getElementById("messageInput");
 
+        // Listen for incoming messages
+        socket.on("chat message", (msg) => {
+            const messageElement = document.createElement("p");
+            messageElement.textContent = msg;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
+        });
+
+        // Send a message
         function sendMessage() {
             const message = messageInput.value.trim();
             if (message) {
-                const messageElement = document.createElement('p');
+                socket.emit("chat message", message); // Send to the server
+                const messageElement = document.createElement("p");
                 messageElement.textContent = message;
-                messageElement.classList.add('sent');
+                messageElement.classList.add("sent");
                 chatMessages.appendChild(messageElement);
-                chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to the bottom
-                messageInput.value = ''; // Clear the input
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                messageInput.value = ""; // Clear input
             }
         }
     </script>
 </body>
 </html>
+
+npm install express socket.io
+
+node server.js
